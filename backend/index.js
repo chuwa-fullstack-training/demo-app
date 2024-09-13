@@ -5,6 +5,7 @@ import userRouter from './routes/users.js';
 import authRouter from './routes/auth.js';
 import profileRouter from './routes/profile.js';
 import postRouter from './routes/posts.js';
+import errorHandler from './middlewares/error.js';
 
 connectDB();
 const app = express();
@@ -14,6 +15,8 @@ app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/profile', profileRouter);
 app.use('/api/posts', postRouter);
+
+app.use(errorHandler);
 
 app.listen(3000, '0.0.0.0', () => {
   console.log('Server is running on port 3000');

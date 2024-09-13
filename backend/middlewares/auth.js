@@ -1,9 +1,10 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
+import { AuthError } from '../utils/error.js';
 
 export const verifyToken = (req, res, next) => {
-  const token = req.header("Authorization"); // || req.header("x-auth-token");
+  const token = req.header('Authorization'); // || req.header("x-auth-token");
   if (!token) {
-    return res.status(401).json({ message: "No token provided" });
+    throw new AuthError('No token provided');
   }
 
   try {
@@ -11,7 +12,7 @@ export const verifyToken = (req, res, next) => {
     req.user = decoded.user;
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+    throw new AuthError('Invalid token');
   }
 };
 
@@ -19,6 +20,6 @@ export const checkAdmin = (req, res, next) => {
   if (req.user.isAdmin) {
     next();
   } else {
-    return res.status(401).json({ message: "Unauthorized" });
+    throw new AuthError('Not authorized as an admin');
   }
 };
