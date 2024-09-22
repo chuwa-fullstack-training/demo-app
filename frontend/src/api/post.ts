@@ -1,6 +1,6 @@
 import api from './base';
 
-const BASE_URL = 'http://localhost:3000/api/posts';
+const BASE_URL = '/posts';
 
 export const getPosts = async () => {
   try {
@@ -10,7 +10,7 @@ export const getPosts = async () => {
     console.error('Error fetching posts:', error);
     throw error;
   }
-}
+};
 
 export const getPostById = async (id: string) => {
   try {
@@ -20,7 +20,7 @@ export const getPostById = async (id: string) => {
     console.error('Error fetching post by id:', error);
     throw error;
   }
-}
+};
 
 export const likePost = async (postId: string) => {
   try {
@@ -30,14 +30,14 @@ export const likePost = async (postId: string) => {
     console.error('Error liking post:', error);
     throw error;
   }
-}
+};
 
-// export const createPost = async (postData: any) => {
-//   try {
-//     const response = await axios.post(BASE_URL, postData);
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error creating post:', error);
-//     throw error;
-//   }
-// }
+export const createPost = async (postData: { text: string }) => {
+  try {
+    const response = await api.post(BASE_URL, postData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating post:', error);
+    throw error;
+  }
+};

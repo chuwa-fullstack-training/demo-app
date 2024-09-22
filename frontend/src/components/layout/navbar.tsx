@@ -25,15 +25,18 @@ const Navbar: React.FC = () => {
   ];
 
   if (isAuthenticated) {
-    menuItems.push({
-      key: 'user',
-      label: 'User',
-      icon: <CircleUser size={20} />,
-      children: [
-        { key: 'profile', label: 'Profile', onClick: () => navigate('/profile') },
-        { key: 'logout', label: 'Logout', onClick: () => dispatch(clearUser()) },
-      ],
-    });
+    menuItems.push(
+      { key: 'create-post', label: 'Create Post', onClick: () => navigate('/create-post') },
+      {
+        key: 'user',
+        label: 'User',
+        icon: <CircleUser size={20} />,
+        children: [
+          { key: 'profile', label: 'Profile', onClick: () => navigate('/profile') },
+          { key: 'logout', label: 'Logout', onClick: () => dispatch(clearUser()) },
+        ],
+      },
+    );
   } else {
     menuItems.push(
       { key: 'login', label: 'Login', onClick: () => navigate('/login') },

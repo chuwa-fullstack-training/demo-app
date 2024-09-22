@@ -9,6 +9,9 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import AllPosts from './pages/post/allPosts';
+import CreatePost from './pages/post/createPost';
+import Profile from './pages/profile';
+import CreateProfile from './pages/profile/createProfile';
 
 const { Content, Footer } = Layout;
 
@@ -31,10 +34,6 @@ const StyledFooter = styled(Footer)`
   text-align: center;
 `;
 
-const Dashboard = () => {
-  return <div>Dashboard</div>;
-};
-
 const App: React.FC = () => {
   return (
     <Router>
@@ -48,8 +47,10 @@ const App: React.FC = () => {
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
               <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/posts" element={<AllPosts />} />
+                <Route path="/create-post" element={<CreatePost />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/create-profile" element={<CreateProfile />} />
               </Route>
             </Routes>
           </SiteLayoutContent>
