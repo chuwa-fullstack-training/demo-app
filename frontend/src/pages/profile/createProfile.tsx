@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 import { AppDispatch, RootState } from '@/app/store';
 import { createUserProfile } from '@/features/profile/profileSlice';
 import { useNavigate } from 'react-router-dom';
+import { ProfilePayload } from '@/api/profile';
 
 const { Title } = Typography;
 
@@ -47,7 +48,7 @@ const CreateProfile: React.FC = () => {
       ...values,
       skills: values.skills.split(',').map((skill: string) => skill.trim()),
     };
-    dispatch(createUserProfile(profileData))
+    dispatch(createUserProfile(profileData as ProfilePayload))
       .then(() => {
         navigate('/profile');
       })

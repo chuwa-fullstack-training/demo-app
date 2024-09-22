@@ -4,7 +4,7 @@ import { Card, Avatar, Typography, Spin, Divider, Row, Col, Tag, Button, Input, 
 import { User, Mail, MapPin, Github, Building2, Cog, Edit, Save } from 'lucide-react';
 import styled from '@emotion/styled';
 import { RootState, AppDispatch } from '@/app/store';
-import { createUserProfile, fetchUserProfile, updateUserProfile } from '@/features/profile/profileSlice';
+import { fetchUserProfile, updateUserProfile } from '@/features/profile/profileSlice';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -139,7 +139,7 @@ const Profile: React.FC = () => {
                     <Input />
                   </Form.Item>
                 ) : (
-                  <Text> {profile?.user.email}</Text>
+                  <Text>email</Text>
                 )}
               </InfoItem>
             </Col>
