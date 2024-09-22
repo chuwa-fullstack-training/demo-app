@@ -1,17 +1,14 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Layout } from 'antd';
-import Navbar from './components/layout/navbar';
+import GlobalMessage from '@/components/GlobalMessage';
+import Navbar from '@/components/layout/navbar';
+import Login from '@/pages/auth/login';
+import Signup from '@/pages/auth/signup';
+import Landing from '@/pages/landing';
 import styled from '@emotion/styled';
-import Landing from './pages/landing';
+import { Layout } from 'antd';
+import React from 'react';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 const { Content, Footer } = Layout;
-
-// Placeholder components for routes
-const Home = () => <div>Home Page</div>;
-const About = () => <div>About Page</div>;
-const Services = () => <div>Services Page</div>;
-const Contact = () => <div>Contact Page</div>;
 
 const AppLayout = styled(Layout)`
   min-height: 100vh;
@@ -36,15 +33,14 @@ const App: React.FC = () => {
   return (
     <Router>
       <AppLayout>
+        <GlobalMessage />
         <Navbar />
         <StyledContent>
           <SiteLayoutContent>
             <Routes>
               <Route path="/" element={<Landing />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/contact" element={<Contact />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/login" element={<Login />} />
             </Routes>
           </SiteLayoutContent>
         </StyledContent>

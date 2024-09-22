@@ -1,6 +1,7 @@
-import React from 'react';
-import { Form, Input, Button, Typography } from 'antd';
 import styled from '@emotion/styled';
+import { Button, Typography } from 'antd';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const { Title } = Typography;
 
@@ -13,41 +14,30 @@ const LandingContainer = styled.div`
   padding: 20px;
 `;
 
-const StyledForm = styled(Form)`
-  width: 300px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 20px;
-  border-radius: 8px;
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
 `;
 
-interface LoginValues {
-  username: string;
-  password: string;
-}
+const StyledButton = styled(Button)`
+  width: 120px;
+`;
 
 const Landing: React.FC = () => {
-  const onFinish = (values: LoginValues) => {
-    console.log('Success:', values);
-    // Handle login logic here
-  };
-
   return (
     <LandingContainer>
-      <StyledForm name="login" initialValues={{ remember: true }} onFinish={onFinish}>
-        <Form.Item name="username" rules={[{ required: true, message: 'Please input your username!' }]}>
-          <Input placeholder="Username" />
-        </Form.Item>
-
-        <Form.Item name="password" rules={[{ required: true, message: 'Please input your password!' }]}>
-          <Input.Password placeholder="Password" />
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-            Log in
-          </Button>
-        </Form.Item>
-      </StyledForm>
+      <Title level={2} style={{ color: 'white', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
+        Welcome to Chuwa Fullstack Training
+      </Title>
+      <ButtonContainer>
+        <StyledButton type="primary" size="large">
+          <Link to="/signup">Sign Up</Link>
+        </StyledButton>
+        <StyledButton size="large">
+          <Link to="/login">Log In</Link>
+        </StyledButton>
+      </ButtonContainer>
     </LandingContainer>
   );
 };
