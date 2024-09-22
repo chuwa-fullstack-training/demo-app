@@ -1,13 +1,6 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import {
-  createPost,
-  getCurrentUserPosts,
-  getPosts,
-  getPostById,
-  deletePost,
-  likePost
-} from '../controllers/posts.js';
+import { createPost, getCurrentUserPosts, getPosts, getPostById, deletePost, likePost } from '../controllers/posts.js';
 import { verifyToken as auth, checkAdmin } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validation.js';
 
@@ -16,18 +9,12 @@ const router = Router();
 // @route   POST api/posts
 // @desc    Create a post
 // @access  Private
-router.post(
-  '/',
-  auth,
-  [check('text', 'Text is required').notEmpty()],
-  validate,
-  createPost
-);
+router.post('/', auth, [check('text', 'Text is required').notEmpty()], validate, createPost);
 
 // @route   GET api/posts
 // @desc    Get all posts
 // @access  Private
-router.get('/', auth, checkAdmin, getPosts);
+router.get('/', auth, getPosts);
 
 // @route   GET api/posts/me
 // @desc    Get current user's posts

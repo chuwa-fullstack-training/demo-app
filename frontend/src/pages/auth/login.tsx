@@ -1,31 +1,39 @@
-import { login } from '@/api/auth';
+import { JwtPayload, KnownError } from '@/app/types';
 import AuthForm from '@/components/auth/form';
 import { setMessage } from '@/features/message/messageSlice';
+import { setUser, loginUser } from '@/features/user/userSlice';
 import { Card } from 'antd';
+import { jwtDecode } from 'jwt-decode';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './styles.module.css';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { AppDispatch } from '@/app/store';
 
 const Login: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const onFinish = async (values: { email: string; password: string }) => {
     try {
-      await login(values);
+      const result = await dispatch(loginUser(values));
+      const { message, token } = unwrapResult(result);
+      const decodedToken = jwtDecode<JwtPayload>(token);
+      dispatch(setUser(decodedToken.user));
       dispatch(
         setMessage({
           type: 'success',
-          content: 'Login successful!',
+          content: message,
         }),
       );
       navigate('/');
-    } catch (error: unknown) {
+    } catch (err: unknown) {
+      const error = err as KnownError;
       dispatch(
         setMessage({
           type: 'error',
-          content: `Login failed: ${error instanceof Error ? error.message : 'Please try again.'}`,
+          content: `Login failed: ${error.message ? error.message : 'Please try again.'}`,
         }),
       );
     }

@@ -12,7 +12,12 @@ export const signup = async ({ name, email, password }: { name: string; email: s
   return response.data;
 };
 
-export const logout = async () => {
-  const response = await axios.post(`${API_URL}/logout`);
-  return response.data;
-};
+// export const logout = async () => {
+//   try {
+//     const response = await axios.post(`${API_URL}/logout`);
+//     return response.data;
+//   } catch (error) {
+//     console.error(error);
+//     throw error;
+//   }
+// };

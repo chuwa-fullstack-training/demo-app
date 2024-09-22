@@ -8,7 +8,7 @@ export const createPost = async (req, res) => {
       text: req.body.text,
       name: user.name,
       avatar: user.avatar,
-      user: req.user.id
+      user: req.user.id,
     });
     const post = await newPost.save();
     res.json(post);
@@ -20,7 +20,7 @@ export const createPost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find().sort({ date: -1 });
+    const posts = await Post.find().sort({ updatedAt: -1 });
     res.json(posts);
   } catch (err) {
     console.error(err.message);
@@ -81,10 +81,8 @@ export const likePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
     // Check if the post has already been liked. If so, unlike it.
-    if (post.likes.some(like => like.user.toString() === req.user.id)) {
-      post.likes = post.likes.filter(
-        like => like.user.toString() !== req.user.id
-      );
+    if (post.likes.some((like) => like.user.toString() === req.user.id)) {
+      post.likes = post.likes.filter((like) => like.user.toString() !== req.user.id);
     } else {
       post.likes.unshift({ user: req.user.id });
     }

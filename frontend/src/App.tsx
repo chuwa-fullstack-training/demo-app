@@ -7,6 +7,8 @@ import styled from '@emotion/styled';
 import { Layout } from 'antd';
 import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+import AllPosts from './pages/post/allPosts';
 
 const { Content, Footer } = Layout;
 
@@ -29,6 +31,10 @@ const StyledFooter = styled(Footer)`
   text-align: center;
 `;
 
+const Dashboard = () => {
+  return <div>Dashboard</div>;
+};
+
 const App: React.FC = () => {
   return (
     <Router>
@@ -41,6 +47,10 @@ const App: React.FC = () => {
               <Route path="/" element={<Landing />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/posts" element={<AllPosts />} />
+              </Route>
             </Routes>
           </SiteLayoutContent>
         </StyledContent>

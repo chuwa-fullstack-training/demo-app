@@ -16,16 +16,20 @@ export const loginUser = async (req, res) => {
     }
 
     const payload = {
-      id: user._id,
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
       avatar: user.avatar,
-      isAdmin: user.isAdmin
+      isAdmin: user.isAdmin,
     };
 
     const token = jwt.sign({ user: payload }, process.env.JWT_SECRET);
 
-    res
-      .status(200)
-      .json({ message: 'User logged in successfully', token, id: user._id });
+    res.status(200).json({
+      message: 'User logged in successfully',
+      token,
+      id: user._id.toString(),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -43,11 +47,12 @@ export const registerUser = async (req, res) => {
       email,
       password,
       avatar,
-      isAdmin
+      isAdmin,
     });
-    res
-      .status(201)
-      .json({ message: 'User created successfully', user: newUser });
+    res.status(201).json({
+      message: 'User created successfully',
+      user: newUser,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
