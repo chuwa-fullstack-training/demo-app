@@ -8,6 +8,8 @@ import postRouter from './routes/posts.js';
 import profileRouter from './routes/profile.js';
 import userRouter from './routes/users.js';
 
+const PORT = process.env.PORT || 3000;
+
 connectDB();
 const app = express();
 app.use(express.json());
@@ -27,6 +29,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(import.meta.dirname, 'client', 'dist', 'index.html'));
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
