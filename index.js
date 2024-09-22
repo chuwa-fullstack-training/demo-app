@@ -14,6 +14,7 @@ app.use(express.json());
 
 // Enable CORS for all routes
 app.use(cors());
+app.use(express.static(path.resolve(import.meta.dirname, 'client', 'build')));
 
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
@@ -22,6 +23,10 @@ app.use('/api/posts', postRouter);
 
 app.use(errorHandler);
 
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(import.meta.dirname, 'client', 'build', 'index.html'));
+});
+
 app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+  console.log('Server is running on port 3000');
 });

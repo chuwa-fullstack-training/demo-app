@@ -4,8 +4,14 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": "20.12.2"
+  },
   "scripts": {
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "dev:client": "npm run dev --prefix ./client",
+    "start": "node index.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [],
   "author": "",
