@@ -1,14 +1,14 @@
-import axios from 'axios';
+import api from './base';
 
 const API_URL = '/auth'; // Adjust this to your backend URL
 
 export const login = async ({ email, password }: { email: string; password: string }) => {
-  const response = await axios.post(`${API_URL}/login`, { email, password });
+  const response = await api.post(`${API_URL}/login`, { email, password });
   return response.data;
 };
 
 export const signup = async ({ name, email, password }: { name: string; email: string; password: string }) => {
-  const response = await axios.post(`${API_URL}/signup`, { name, email, password });
+  const response = await api.post(`${API_URL}/signup`, { name, email, password });
   return response.data;
 };
 

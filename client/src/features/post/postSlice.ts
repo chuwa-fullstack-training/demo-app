@@ -1,7 +1,13 @@
 import { KnownError } from '@/app/types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { getPostById, getPosts, likePost as likePostApi, createPost as createPostApi } from '@/api/post';
+import {
+  getPostById,
+  getPosts,
+  likePost as likePostApi,
+  createPost as createPostApi,
+  deletePost as deletePostApi,
+} from '@/api/post';
 
 export interface Post {
   _id: string;
@@ -38,7 +44,7 @@ export const fetchPosts = createAsyncThunk<Post[], void, { rejectValue: KnownErr
       return response;
     } catch (err) {
       const error: AxiosError<KnownError> = err as AxiosError<KnownError>;
-      console.log(error)
+      console.log(error);
       if (!error.response) {
         throw error;
       }
@@ -95,6 +101,21 @@ export const createPost = createAsyncThunk<Post, { text: string }, { rejectValue
   },
 );
 
+export const deletePost = createAsyncThunk<void, string, { rejectValue: KnownError }>(
+  'post/deletePost',
+  async (postId, { rejectWithValue }) => {
+    try {
+      await deletePostApi(postId);
+    } catch (err) {
+      const error: AxiosError<KnownError> = err as AxiosError<KnownError>;
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
 const postSlice = createSlice({
   name: 'post',
   initialState,
@@ -122,6 +143,27 @@ const postSlice = createSlice({
       .addCase(fetchPostById.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'Failed to fetch post';
+      })
+      .addCase(createPost.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createPost.fulfilled, (state, action: PayloadAction<Post>) => {
+        state.status = 'succeeded';
+        state.posts.push(action.payload);
+      })
+      .addCase(createPost.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'Failed to create post';
+      })
+      .addCase(deletePost.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deletePost.fulfilled, (state, action: PayloadAction<void>) => {
+        state.status = 'succeeded';
+      })
+      .addCase(deletePost.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'Failed to delete post';
       });
   },
 });

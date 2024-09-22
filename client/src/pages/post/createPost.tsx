@@ -1,10 +1,10 @@
-import { AppDispatch } from '@/app/store';
+import { AppDispatch, RootState } from '@/app/store';
 import { KnownError } from '@/app/types';
 import { setMessage } from '@/features/message/messageSlice';
 import { createPost } from '@/features/post/postSlice'; // Assuming you have a postSlice
 import { Button, Card, Form, Input } from 'antd';
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styles from './styles.module.css';
 
@@ -13,6 +13,7 @@ const { TextArea } = Input;
 const CreatePost: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { status } = useSelector((state: RootState) => state.post);
 
   const onFinish = async (values: { text: string }) => {
     try {
@@ -43,7 +44,7 @@ const CreatePost: React.FC = () => {
           <TextArea rows={6} />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={status === 'loading'}>
             Create Post
           </Button>
         </Form.Item>

@@ -41,3 +41,12 @@ export const createPost = async (postData: { text: string }) => {
     throw error;
   }
 };
+
+export const deletePost = async (postId: string) => {
+  try {
+    await api.delete(`${BASE_URL}/${postId}`);
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    throw error;
+  }
+};

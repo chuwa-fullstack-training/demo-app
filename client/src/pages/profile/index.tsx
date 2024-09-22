@@ -78,11 +78,6 @@ const Profile: React.FC = () => {
     form.validateFields().then((values) => {
       const updatedProfile = {
         ...profile,
-        // user: {
-        //   ...profile.user,
-        //   avatar: values.avatar,
-        //   name: values.name,
-        // },
         status: values.status,
         location: values.location,
         githubUsername: values.githubUsername,
@@ -188,7 +183,7 @@ const Profile: React.FC = () => {
           <SkillsContainer>
             <InfoItem>
               <Cog style={{ marginRight: '8px' }} size={16} />
-              <Text strong>Skills:</Text>
+              <Text strong>Skills</Text>
             </InfoItem>
             <div style={{ marginTop: '10px' }}>
               {isEditing ? (

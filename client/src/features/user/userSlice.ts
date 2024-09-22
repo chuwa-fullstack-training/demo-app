@@ -60,9 +60,9 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<UserState['user']>) => {
+    setUser: (state, action: PayloadAction<LoginResponse>) => {
       state.isAuthenticated = !!action.payload;
-      state.user = action.payload;
+      state.user = action.payload.user;
     },
     clearUser: (state) => {
       localStorage.removeItem('token');
