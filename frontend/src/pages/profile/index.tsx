@@ -111,23 +111,12 @@ const Profile: React.FC = () => {
       <ProfileCard>
         <Form form={form} layout="vertical">
           <AvatarContainer>
-            {isEditing ? (
-              <Form.Item name="avatar">
-                <Input prefix={<User />} placeholder="Avatar URL" />
-              </Form.Item>
-            ) : (
-              <StyledAvatar size={120} icon={<User />} src={profile?.user.avatar} />
-            )}
+            <StyledAvatar size={120} icon={<User />} src={profile?.user.avatar} />
           </AvatarContainer>
-          {isEditing ? (
-            <Form.Item name="name">
-              <Input style={{ textAlign: 'center', marginBottom: '5px' }} />
-            </Form.Item>
-          ) : (
-            <Title level={2} style={{ textAlign: 'center', marginBottom: '5px' }}>
-              {profile?.user.name}
-            </Title>
-          )}
+
+          <Title level={2} style={{ textAlign: 'center', marginBottom: '5px' }}>
+            {profile?.user.name}
+          </Title>
           {isEditing ? (
             <Form.Item name="status">
               <Input style={{ textAlign: 'center', marginBottom: '20px' }} />
@@ -180,7 +169,7 @@ const Profile: React.FC = () => {
                 <Input />
               </Form.Item>
             ) : (
-              <Text> {profile?.githubUsername}</Text>
+              <Text>{profile?.githubUsername}</Text>
             )}
           </InfoItem>
           <InfoItem>
@@ -217,6 +206,7 @@ const Profile: React.FC = () => {
           </SkillsContainer>
           <Divider />
           <div className="flex justify-end">
+            {isEditing && <Button onClick={() => setIsEditing(false)}>Cancel</Button>}
             <Button
               type="primary"
               icon={isEditing ? <Save size={16} /> : <Edit size={16} />}
