@@ -1,8 +1,9 @@
 import { AppDispatch, RootState } from '@/app/store';
-import { fetchPosts } from '@/features/post/postSlice';
+import { fetchPosts, likePost, Post } from '@/features/post/postSlice';
 import styled from '@emotion/styled';
 import { Avatar, Card, List, Spin, Typography } from 'antd';
-import React, { useEffect } from 'react';
+import { Heart } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import Moment from 'react-moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +12,6 @@ const { Paragraph } = Typography;
 
 const StyledCard = styled(Card)`
   margin-bottom: 24px;
-  cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
@@ -34,6 +34,7 @@ const AuthorAvatar = styled(Avatar)`
 
 const PostContent = styled(Paragraph)`
   color: #595959;
+  cursor: pointer;
 `;
 
 const AllPosts: React.FC = () => {
@@ -41,15 +42,31 @@ const AllPosts: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { posts, status, error } = useSelector((state: RootState) => state.post);
-
-  console.log(posts);
+  const [localPosts, setLocalPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    dispatch(fetchPosts());
+    dispatch(fetchPosts())
+      .unwrap()
+      .then((posts) => setLocalPosts(posts));
   }, [dispatch]);
+
+  useEffect(() => {
+    setLocalPosts(posts);
+  }, [posts]);
 
   const handlePostClick = (postId: string) => {
     navigate(`/posts/${postId}`);
+  };
+
+  const handleLikePost = async (postId: string) => {
+    try {
+      const updatedPost = await dispatch(likePost(postId)).unwrap();
+      setLocalPosts((prevPosts) =>
+        prevPosts.map((post) => (post._id === postId ? { ...post, likes: updatedPost } : post)),
+      );
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
   };
 
   if (status === 'loading') {
@@ -66,19 +83,28 @@ const AllPosts: React.FC = () => {
 
   return (
     <List
-      dataSource={posts}
+      dataSource={localPosts}
       renderItem={(post) => (
-        <StyledCard onClick={() => handlePostClick(post._id)}>
+        <StyledCard>
           <PostMeta>
             <AuthorAvatar src={post.avatar} />
             <span>{post.name}</span>
+            <span
+              style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}
+              onClick={() => handleLikePost(post._id)}
+            >
+              <Heart size={12} />
+              <span style={{ marginLeft: '4px' }}>{post.likes.length}</span>
+            </span>
             {post.updatedAt && (
               <Moment format="MM/DD/YYYY hh:mm:ss" style={{ marginLeft: 'auto', fontSize: '12px' }}>
                 {post.updatedAt}
               </Moment>
             )}
           </PostMeta>
-          <PostContent ellipsis={{ rows: 3, expandable: false }}>{post.text}</PostContent>
+          <PostContent ellipsis={{ rows: 3, expandable: false }} onClick={() => handlePostClick(post._id)}>
+            {post.text}
+          </PostContent>
         </StyledCard>
       )}
     />

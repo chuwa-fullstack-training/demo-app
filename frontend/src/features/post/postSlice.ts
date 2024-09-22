@@ -1,7 +1,7 @@
 import { KnownError } from '@/app/types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { getPostById, getPosts } from '../../api/post';
+import { getPostById, getPosts, likePost as likePostApi } from '@/api/post';
 
 export interface Post {
   _id: string;
@@ -62,6 +62,24 @@ export const fetchPostById = createAsyncThunk<Post, string, { rejectValue: Known
     }
   },
 );
+
+export const likePost = createAsyncThunk<Post['likes'], string, { rejectValue: KnownError }>(
+  'post/likePost',
+  async (postId, { rejectWithValue }) => {
+    try {
+      const response = await likePostApi(postId);
+      return response;
+    } catch (err) {
+      const error: AxiosError<KnownError> = err as AxiosError<KnownError>;
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+
 
 const postSlice = createSlice({
   name: 'post',
