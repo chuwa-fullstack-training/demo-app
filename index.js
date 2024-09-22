@@ -1,6 +1,6 @@
 import cors from 'cors';
-import 'dotenv/config';
 import express from 'express';
+import path from 'path';
 import connectDB from './config/db.js';
 import errorHandler from './middlewares/error.js';
 import authRouter from './routes/auth.js';
@@ -14,7 +14,7 @@ app.use(express.json());
 
 // Enable CORS for all routes
 app.use(cors());
-app.use(express.static(path.resolve(import.meta.dirname, 'client', 'build')));
+app.use(express.static(path.resolve(import.meta.dirname, 'client', 'dist')));
 
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
@@ -24,7 +24,7 @@ app.use('/api/posts', postRouter);
 app.use(errorHandler);
 
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(import.meta.dirname, 'client', 'build', 'index.html'));
+  res.sendFile(path.resolve(import.meta.dirname, 'client', 'dist', 'index.html'));
 });
 
 app.listen(3000, () => {
