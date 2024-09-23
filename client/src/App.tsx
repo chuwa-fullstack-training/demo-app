@@ -15,6 +15,8 @@ import CreatePost from './pages/post/createPost';
 import PostDetail from './pages/post/detail';
 import Profile from './pages/profile';
 import CreateProfile from './pages/profile/createProfile';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 
 const { Content, Footer } = Layout;
 
@@ -41,33 +43,57 @@ const StyledFooter = styled(Footer)`
 
 const queryClient = new QueryClient();
 
+// Create an HTTP link
+const httpLink = createHttpLink({
+  uri: '/graphql',
+});
+
+// Create an auth link
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('token');
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? token : '',
+    },
+  };
+});
+
+// Create the Apollo Client
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+});
+
 const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <AppLayout>
-          <GlobalMessage />
-          <Navbar />
-          <StyledContent>
-            <SiteLayoutContent>
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/login" element={<Login />} />
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/posts" element={<AllPosts />} />
-                  <Route path="/posts/:id" element={<PostDetail />} />
-                  <Route path="/create-post" element={<CreatePost />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/create-profile" element={<CreateProfile />} />
-                </Route>
-              </Routes>
-            </SiteLayoutContent>
-          </StyledContent>
-          <StyledFooter>©2024 Chuwa Fullstack Training</StyledFooter>
-        </AppLayout>
-      </Router>
-    </QueryClientProvider>
+    <ApolloProvider client={client}>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <AppLayout>
+            <GlobalMessage />
+            <Navbar />
+            <StyledContent>
+              <SiteLayoutContent>
+                <Routes>
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/posts" element={<AllPosts />} />
+                    <Route path="/posts/:id" element={<PostDetail />} />
+                    <Route path="/create-post" element={<CreatePost />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/create-profile" element={<CreateProfile />} />
+                  </Route>
+                </Routes>
+              </SiteLayoutContent>
+            </StyledContent>
+            <StyledFooter>©2024 Chuwa Fullstack Training</StyledFooter>
+          </AppLayout>
+        </Router>
+      </QueryClientProvider>
+    </ApolloProvider>
   );
 };
 

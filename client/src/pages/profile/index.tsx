@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 import { RootState, AppDispatch } from '@/app/store';
 import { fetchUserProfile, updateUserProfile } from '@/features/profile/profileSlice';
 import { useNavigate } from 'react-router-dom';
+import { gql, useQuery } from '@apollo/client';
 
 const { Title, Text } = Typography;
 
@@ -44,12 +45,34 @@ const SkillsContainer = styled.div`
   margin-top: 20px;
 `;
 
+const GET_CURRENT_PROFILE = gql`
+  query GetCurrentProfile {
+    getCurrentProfile {
+      id
+      user {
+        name
+        avatar
+      }
+      company
+      location
+      status
+      skills
+      githubUsername
+    }
+  }
+`;
+
 const Profile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { profile, loading } = useSelector((state: RootState) => state.profile);
+  // const { profile, loading } = useSelector((state: RootState) => state.profile);
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+
+  const {
+    data: { getCurrentProfile: profile },
+    loading,
+  } = useQuery(GET_CURRENT_PROFILE);
 
   useEffect(() => {
     dispatch(fetchUserProfile());
