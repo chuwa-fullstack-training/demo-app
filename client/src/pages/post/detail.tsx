@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, Typography, Space, message, Input, Form, Avatar, Spin } from 'antd';
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Card, Button, Typography, Space, Input, Form, Avatar, Spin } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import api from '@/api/base';
@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/app/store';
 import Moment from 'react-moment';
 import { useQuery } from '@tanstack/react-query';
-import { deletePost } from '@/features/post/postSlice';
+import { deletePost, updatePost } from '@/features/post/postSlice';
 
 const { Title, Text } = Typography;
 
@@ -25,9 +25,10 @@ const FullPageLoader = () => (
 
 const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const currentUser = useSelector((state: RootState) => state.user.user);
+  const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const dispatch = useDispatch<AppDispatch>();
   const [editMode, setEditMode] = useState(false);
+  const navigate = useNavigate();
 
   const {
     data: post,
@@ -41,28 +42,14 @@ const PostDetail: React.FC = () => {
     },
   });
 
-  // const [post, setPost] = useState<any>(null);
-  //   useEffect(() => {
-  //     const fetchPost = async () => {
-  //       try {
-  //         const response = await api.get(`/posts/${id}`);
-  //         setPost(response.data);
-  //       } catch (error) {
-  //         console.error('Error fetching post:', error);
-  //         message.error('Failed to load post details');
-  //       }
-  //     };
-
-  //     fetchPost();
-  //   }, [id]);
-
   const handleEdit = () => {
-    // navigate(`/edit-post/${id}`);
     setEditMode(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async (values: { text: string }) => {
     setEditMode(false);
+    await dispatch(updatePost({ postId: id!, postData: { text: values.text } }));
+    await navigate(`/posts/${id}`);
   };
 
   const handleCancel = () => {
@@ -90,7 +77,7 @@ const PostDetail: React.FC = () => {
           <Text>{post.name}</Text>
         </Space>
         <Text type="secondary" style={{ fontSize: '12px' }}>
-          <Moment format="MM/DD/YYYY hh:mm:ss">{post.createdAt}</Moment>
+          <Moment fromNow>{post.createdAt}</Moment>
         </Text>
         {editMode ? (
           <Form onFinish={handleSave} initialValues={{ text: post.text }}>

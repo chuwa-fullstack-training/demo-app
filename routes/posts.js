@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { createPost, getCurrentUserPosts, getPosts, getPostById, deletePost, likePost } from '../controllers/posts.js';
+import { createPost, getCurrentUserPosts, getPosts, getPostById, deletePost, likePost, updatePost } from '../controllers/posts.js';
 import { verifyToken as auth, checkAdmin } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validation.js';
 
@@ -25,6 +25,11 @@ router.get('/me', auth, getCurrentUserPosts);
 // @desc    Get post by ID
 // @access  Private
 router.get('/:id', auth, getPostById);
+
+// @route   PUT api/posts/:id
+// @desc    Update a post
+// @access  Private
+router.put('/:id', auth, updatePost);
 
 // @route   DELETE api/posts/:id
 // @desc    Delete a post

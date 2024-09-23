@@ -6,7 +6,7 @@ import { AxiosError } from 'axios';
 interface UserState {
   isAuthenticated: boolean;
   token: string | null;
-  user: {
+  currentUser: {
     id: string;
     name: string;
     email: string;
@@ -35,7 +35,7 @@ export interface LoginPayload {
 
 const initialState: UserState = {
   isAuthenticated: false,
-  user: null,
+  currentUser: null,
   token: null,
   loading: false,
 };
@@ -62,12 +62,12 @@ const userSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<LoginResponse>) => {
       state.isAuthenticated = !!action.payload;
-      state.user = action.payload.user;
+      state.currentUser = action.payload.user;
     },
     clearUser: (state) => {
       localStorage.removeItem('token');
       state.isAuthenticated = false;
-      state.user = null;
+      state.currentUser = null;
     },
   },
   extraReducers: (builder) => {
@@ -78,7 +78,7 @@ const userSlice = createSlice({
       localStorage.setItem('token', action.payload.token);
       state.loading = false;
       state.isAuthenticated = true;
-      state.user = action.payload.user;
+      state.currentUser = action.payload.user;
     });
     builder.addCase(loginUser.rejected, (state) => {
       state.loading = false;

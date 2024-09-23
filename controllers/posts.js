@@ -54,6 +54,19 @@ export const getPostById = async (req, res) => {
   }
 };
 
+export const updatePost = async (req, res) => {
+  try {
+    const post = await Post.findByIdAndUpdate(req.params.id, { text: req.body.text }, { new: true });
+    res.json(post);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+};
+
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);

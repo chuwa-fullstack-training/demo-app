@@ -1,5 +1,6 @@
 import { AppDispatch, RootState } from '@/app/store';
 import { fetchPosts, likePost, Post } from '@/features/post/postSlice';
+import { cn } from '@/lib/utils';
 import styled from '@emotion/styled';
 import { Avatar, Card, List, Spin, Typography } from 'antd';
 import { Heart } from 'lucide-react';
@@ -42,6 +43,7 @@ const AllPosts: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { posts, status, error } = useSelector((state: RootState) => state.post);
+  const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const [localPosts, setLocalPosts] = useState<Post[]>([]);
 
   useEffect(() => {
@@ -81,6 +83,10 @@ const AllPosts: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
+  const checkIsLiked = (post: Post) => {
+    return post.likes.some((like) => like.user === currentUser?.id);
+  };
+
   return (
     <List
       dataSource={localPosts}
@@ -90,14 +96,14 @@ const AllPosts: React.FC = () => {
             <AuthorAvatar src={post.avatar} />
             <span>{post.name}</span>
             <span
-              style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}
+              style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}
               onClick={() => handleLikePost(post._id)}
             >
-              <Heart size={12} />
+              <Heart size={12} className={cn(checkIsLiked(post) && 'text-red-500 fill-red-500')} />
               <span style={{ marginLeft: '4px' }}>{post.likes.length}</span>
             </span>
             {post.updatedAt && (
-              <Moment format="MM/DD/YYYY hh:mm:ss" style={{ marginLeft: 'auto', fontSize: '12px' }}>
+              <Moment style={{ marginLeft: 'auto', fontSize: '12px' }} fromNow>
                 {post.updatedAt}
               </Moment>
             )}

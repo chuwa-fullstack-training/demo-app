@@ -50,3 +50,13 @@ export const deletePost = async (postId: string) => {
     throw error;
   }
 };
+
+export const updatePost = async (postId: string, postData: { text: string }) => {
+  try {
+    const response = await api.put(`${BASE_URL}/${postId}`, postData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating post:', error);
+    throw error;
+  }
+};

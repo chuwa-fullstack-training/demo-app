@@ -7,6 +7,7 @@ import {
   likePost as likePostApi,
   createPost as createPostApi,
   deletePost as deletePostApi,
+  updatePost as updatePostApi,
 } from '@/api/post';
 
 export interface Post {
@@ -106,6 +107,22 @@ export const deletePost = createAsyncThunk<void, string, { rejectValue: KnownErr
   async (postId, { rejectWithValue }) => {
     try {
       await deletePostApi(postId);
+    } catch (err) {
+      const error: AxiosError<KnownError> = err as AxiosError<KnownError>;
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const updatePost = createAsyncThunk<Post, { postId: string; postData: { text: string } }, { rejectValue: KnownError }>(
+  'post/updatePost',
+  async ({ postId, postData }, { rejectWithValue }) => {
+    try {
+      const response = await updatePostApi(postId, postData);
+      return response;
     } catch (err) {
       const error: AxiosError<KnownError> = err as AxiosError<KnownError>;
       if (!error.response) {

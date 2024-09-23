@@ -4,16 +4,18 @@ import Login from '@/pages/auth/login';
 import Signup from '@/pages/auth/signup';
 import Landing from '@/pages/landing';
 import styled from '@emotion/styled';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Layout } from 'antd';
+import 'moment-timezone';
 import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import AllPosts from './pages/post/allPosts';
 import CreatePost from './pages/post/createPost';
+import PostDetail from './pages/post/detail';
 import Profile from './pages/profile';
 import CreateProfile from './pages/profile/createProfile';
-import PostDetail from './pages/post/detail';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 const { Content, Footer } = Layout;
 
 const AppLayout = styled(Layout)`

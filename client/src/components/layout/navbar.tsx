@@ -12,7 +12,7 @@ const { Header } = Layout;
 
 const Navbar: React.FC = () => {
   const [visible, setVisible] = useState(false);
-  const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
+  const { currentUser, isAuthenticated } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
       { key: 'create-post', label: 'Create Post', onClick: () => navigate('/create-post') },
       {
         key: 'user',
-        label: 'User',
+        label: currentUser?.name ?? 'User',
         icon: <CircleUser size={20} />,
         children: [
           { key: 'profile', label: 'Profile', onClick: () => navigate('/profile') },
