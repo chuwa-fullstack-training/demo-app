@@ -14,6 +14,14 @@ export interface Profile {
   githubUsername: string;
 }
 
+export interface GithubRepo {
+  name: string;
+  private: boolean;
+  description: string;
+  html_url: string;
+  language: string;
+}
+
 export type ProfilePayload = Omit<Profile, 'user' | '_id'>;
 
 export const getCurrentUserProfile = async () => {
@@ -42,6 +50,16 @@ export const createCurrentUserProfile = async (profile: ProfilePayload) => {
     return response.data;
   } catch (error) {
     console.error('Error creating user profile:', error);
+    throw error;
+  }
+};
+
+export const getGithubRepos = async (username: string) => {
+  try {
+    const response = await api.get(`/profile/github/${username}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching GitHub repositories:', error);
     throw error;
   }
 };

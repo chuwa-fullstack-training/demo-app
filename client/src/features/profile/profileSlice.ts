@@ -1,4 +1,4 @@
-import { createCurrentUserProfile, getCurrentUserProfile, Profile, ProfilePayload, updateCurrentUserProfile } from '@/api/profile';
+import { createCurrentUserProfile, getCurrentUserProfile, getGithubRepos, GithubRepo, Profile, ProfilePayload, updateCurrentUserProfile } from '@/api/profile';
 import { KnownError } from '@/app/types';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
@@ -43,6 +43,21 @@ export const createUserProfile = createAsyncThunk<Profile, ProfilePayload, { rej
   async (profile, { rejectWithValue }) => {
     try {
       return (await createCurrentUserProfile(profile)) as Profile;
+    } catch (err) {
+      const error: AxiosError<KnownError> = err as AxiosError<KnownError>;
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const fetchGithubRepos = createAsyncThunk<GithubRepo[], string, { rejectValue: KnownError }>(
+  'user/fetchGithubRepos',
+  async (username, { rejectWithValue }) => {
+    try {
+      return (await getGithubRepos(username)) as GithubRepo[];
     } catch (err) {
       const error: AxiosError<KnownError> = err as AxiosError<KnownError>;
       if (!error.response) {

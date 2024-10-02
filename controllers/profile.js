@@ -49,7 +49,9 @@ export const createProfile = async (req, res) => {
     company,
     location,
     status,
-    skills: skills.split(',').map((skill) => skill.trim()),
+    skills: Array.isArray(skills)
+      ? skills.map((skill) => skill.trim())
+      : skills.split(',').map((skill) => skill.trim()),
     githubUsername,
   };
 

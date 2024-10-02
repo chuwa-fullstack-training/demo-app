@@ -1,9 +1,11 @@
 import { ProfilePayload, Profile as ProfileType } from '@/api/profile';
 import { AppDispatch, RootState } from '@/app/store';
 import { setMessage } from '@/features/message/messageSlice';
-import { fetchUserProfile, updateUserProfile } from '@/features/profile/profileSlice';
+import { fetchGithubRepos, fetchUserProfile, updateUserProfile } from '@/features/profile/profileSlice';
+import { cn } from '@/lib/utils';
 import styled from '@emotion/styled';
-import { Avatar, Card, Divider, Input, List, Spin, Tag, Typography } from 'antd';
+import { useQuery } from '@tanstack/react-query';
+import { Avatar, Card, Divider, Input, List, Space, Spin, Tag, Typography } from 'antd';
 import { Building2, CircleX, Cog, Edit, Github, MapPin, Save, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -60,6 +62,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const [editField, setEditField] = useState<string | null>(null);
   const [profileState, setProfileState] = useState<Partial<ProfileType> | null>(profile);
+  const [githubUsername, setGithubUsername] = useState<string>('');
 
   useEffect(() => {
     dispatch(fetchUserProfile())
@@ -71,6 +74,13 @@ const Profile: React.FC = () => {
         console.log(err);
       });
   }, [dispatch]);
+
+  const { data: githubRepos, isLoading: isGithubReposLoading } = useQuery({
+    enabled: !!githubUsername,
+    queryKey: ['githubRepos', githubUsername],
+    queryFn: async () => await dispatch(fetchGithubRepos(githubUsername)).unwrap(),
+    staleTime: 1000 * 60 * 30,
+  });
 
   if (loading) {
     return (
@@ -119,6 +129,12 @@ const Profile: React.FC = () => {
   const handleCancel = () => {
     setEditField(null);
     setProfileState(profile);
+  };
+
+  const handleClick = async (field: string) => {
+    if (field === 'githubUsername') {
+      setGithubUsername(profileState?.githubUsername as string);
+    }
   };
 
   const data = [
@@ -201,8 +217,24 @@ const Profile: React.FC = () => {
           itemLayout="horizontal"
           dataSource={data}
           renderItem={(item) => (
-            <List.Item actions={getActionBtns(item.key)}>
+            <List.Item actions={getActionBtns(item.key)} onClick={() => handleClick(item.key)}>
               <List.Item.Meta title={item.title} description={item.description} avatar={item.icon} />
+              {item.key === 'githubUsername' && githubRepos && (
+                <ul
+                  style={{ width: '50%' }}
+                  className="list-none hover:list-disc h-32 overflow-y-auto gap-2 flex flex-col"
+                >
+                  {githubRepos.length > 0 &&
+                    githubRepos.slice(0, 3).map((repo) => (
+                      <li key={repo.name}>
+                        <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
+                          {repo.name}
+                        </a>
+                        <div className="text-xs text-gray-500">{repo.description}</div>
+                      </li>
+                    ))}
+                </ul>
+              )}
             </List.Item>
           )}
         />

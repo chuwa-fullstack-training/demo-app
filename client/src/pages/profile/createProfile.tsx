@@ -7,6 +7,7 @@ import { AppDispatch, RootState } from '@/app/store';
 import { createUserProfile } from '@/features/profile/profileSlice';
 import { useNavigate } from 'react-router-dom';
 import { ProfilePayload } from '@/api/profile';
+import { setMessage } from '@/features/message/messageSlice';
 
 const { Title } = Typography;
 
@@ -54,6 +55,7 @@ const CreateProfile: React.FC = () => {
       })
       .catch((error) => {
         console.error('Error creating profile:', error);
+        dispatch(setMessage(error.message));
       });
   };
 
