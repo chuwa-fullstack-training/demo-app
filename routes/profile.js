@@ -3,9 +3,10 @@ import {
   getProfiles,
   getProfileByUserId,
   createProfile,
-  updateProfile,
+  updateCurrentProfile,
   getCurrentProfile,
-  getGithubRepos
+  updateProfile,
+  getGithubRepos,
 } from '../controllers/profile.js';
 import { verifyToken as auth } from '../middlewares/auth.js';
 import { check } from 'express-validator';
@@ -31,7 +32,7 @@ router.get('/me', auth, getCurrentProfile);
 // @route   PUT api/profile/me
 // @desc    Update current user's profile
 // @access  Private
-router.put('/me', auth, updateProfile);
+router.put('/me', auth, updateCurrentProfile);
 
 // @route   POST api/profile
 // @desc    Create or update user's profile
@@ -39,12 +40,9 @@ router.put('/me', auth, updateProfile);
 router.post(
   '/',
   auth,
-  [
-    check('status', 'Status is required').notEmpty(),
-    check('skills', 'Skills is required').notEmpty()
-  ],
+  [check('status', 'Status is required').notEmpty(), check('skills', 'Skills is required').notEmpty()],
   validate,
-  createProfile
+  createProfile,
 );
 
 // @route   PUT api/profile

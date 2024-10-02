@@ -6,7 +6,7 @@ import { CircleUser } from 'lucide-react';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import './navbar.css';
+import './navbar.css'; // !NOT recommended
 
 const { Header } = Layout;
 
@@ -39,15 +39,15 @@ const Navbar: React.FC = () => {
     );
   } else {
     menuItems.push(
-      { key: 'login', label: 'Login', onClick: () => navigate('/login') },
-      { key: 'sign-up', label: 'Sign Up', onClick: () => navigate('/signup') },
+      { key: 'login', label: 'Log In', onClick: () => navigate('/login') },
+      { key: 'signup', label: 'Sign Up', onClick: () => navigate('/signup') },
     );
   }
 
   return (
     <Header className="navbar">
       <div className="logo">
-        <img src="/vite.svg" alt="logo" />
+        <img src="/vite.svg" alt="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }} />
       </div>
       <div className="navbar-menu">
         <div className="desktop-menu">

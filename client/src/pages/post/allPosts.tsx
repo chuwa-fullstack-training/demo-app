@@ -2,7 +2,7 @@ import { AppDispatch, RootState } from '@/app/store';
 import { fetchPosts, likePost, Post } from '@/features/post/postSlice';
 import { cn } from '@/lib/utils';
 import styled from '@emotion/styled';
-import { Avatar, Card, List, Spin, Typography } from 'antd';
+import { Avatar, Card, List, Space, Spin, Typography } from 'antd';
 import { Heart } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import Moment from 'react-moment';
@@ -25,6 +25,7 @@ const StyledCard = styled(Card)`
 const PostMeta = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 12px;
   color: #8c8c8c;
 `;
@@ -93,17 +94,19 @@ const AllPosts: React.FC = () => {
       renderItem={(post) => (
         <StyledCard>
           <PostMeta>
-            <AuthorAvatar src={post.avatar} />
-            <span>{post.name}</span>
-            <span
+            <div className="">
+              <AuthorAvatar src={post.avatar} />
+              <span>{post.name}</span>
+            </div>
+            <div
               style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}
               onClick={() => handleLikePost(post._id)}
             >
               <Heart size={12} className={cn(checkIsLiked(post) && 'text-red-500 fill-red-500')} />
               <span style={{ marginLeft: '4px' }}>{post.likes.length}</span>
-            </span>
+            </div>
             {post.updatedAt && (
-              <Moment style={{ marginLeft: 'auto', fontSize: '12px' }} fromNow>
+              <Moment className="ml-auto text-xs hidden xs:block" fromNow>
                 {post.updatedAt}
               </Moment>
             )}

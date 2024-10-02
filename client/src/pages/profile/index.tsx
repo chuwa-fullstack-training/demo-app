@@ -1,11 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Card, Avatar, Typography, Spin, Divider, Row, Col, Tag, Button, Input, Form } from 'antd';
-import { User, Mail, MapPin, Github, Building2, Cog, Edit, Save } from 'lucide-react';
-import styled from '@emotion/styled';
-import { RootState, AppDispatch } from '@/app/store';
+import { ProfilePayload, Profile as ProfileType } from '@/api/profile';
+import { AppDispatch, RootState } from '@/app/store';
+import { setMessage } from '@/features/message/messageSlice';
 import { fetchUserProfile, updateUserProfile } from '@/features/profile/profileSlice';
+import styled from '@emotion/styled';
+import { Avatar, Card, Divider, Input, List, Spin, Tag, Typography } from 'antd';
+import { Building2, CircleX, Cog, Edit, Github, MapPin, Save, User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+
+const profileSchema = z.object({
+  location: z.string().refine((data) => data.length > 0, {
+    message: 'Location is required',
+  }),
+  githubUsername: z.string().refine((data) => data.length > 0, {
+    message: 'GitHub username is required',
+  }),
+  company: z.string().refine((data) => data.length > 0, {
+    message: 'Company is required',
+  }),
+  skills: z.array(z.string()).refine((data) => data.length > 0, {
+    message: 'Skills are required',
+  }),
+});
+
+type Profile = z.infer<typeof profileSchema>;
 
 const { Title, Text } = Typography;
 
@@ -34,60 +54,23 @@ const StyledAvatar = styled(Avatar)`
   border: 4px solid #1890ff;
 `;
 
-const InfoItem = styled.div`
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-`;
-
-const SkillsContainer = styled.div`
-  margin-top: 20px;
-`;
-
 const Profile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { profile, loading } = useSelector((state: RootState) => state.profile);
-  const [isEditing, setIsEditing] = useState(false);
-  const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [editField, setEditField] = useState<string | null>(null);
+  const [profileState, setProfileState] = useState<Partial<ProfileType> | null>(profile);
 
   useEffect(() => {
-    dispatch(fetchUserProfile());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (profile) {
-      form.setFieldsValue({
-        avatar: profile.user.avatar,
-        name: profile.user.name,
-        status: profile.status,
-        // email: profile.user.email,
-        location: profile.location,
-        githubUsername: profile.githubUsername,
-        company: profile.company,
-        skills: profile.skills.join(', '),
+    dispatch(fetchUserProfile())
+      .unwrap()
+      .then((res) => {
+        setProfileState(res);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }
-  }, [profile, form]);
-
-  const handleEditProfile = () => {
-    setIsEditing(true);
-  };
-
-  const handleSaveProfile = () => {
-    form.validateFields().then((values) => {
-      const updatedProfile = {
-        ...profile,
-        status: values.status,
-        location: values.location,
-        githubUsername: values.githubUsername,
-        company: values.company,
-        skills: values.skills.split(',').map((skill: string) => skill.trim()),
-      };
-      dispatch(updateUserProfile(updatedProfile));
-      setIsEditing(false);
-    });
-  };
+  }, [dispatch]);
 
   if (loading) {
     return (
@@ -101,116 +84,128 @@ const Profile: React.FC = () => {
     navigate('/create-profile');
   }
 
+  const handleEdit = (field: string) => {
+    setEditField(field);
+  };
+
+  const handleSave = async (field: string) => {
+    try {
+      profileSchema.parse(profileState);
+      await dispatch(updateUserProfile(profileState as ProfilePayload));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log(field, 'data is invalid', error.message);
+        dispatch(
+          setMessage({
+            type: 'error',
+            content: JSON.parse(error.message)
+              .map((err: { message: string }) => err.message)
+              .join(', '),
+          }),
+        );
+      }
+    }
+    setEditField(null);
+  };
+
+  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (field === 'skills') {
+      setProfileState({ ...profileState, [field]: e.target.value.split(',') });
+    } else {
+      setProfileState({ ...profileState, [field]: e.target.value });
+    }
+  };
+
+  const handleCancel = () => {
+    setEditField(null);
+    setProfileState(profile);
+  };
+
+  const data = [
+    {
+      key: 'location',
+      title: 'Location',
+      description:
+        editField === 'location' ? (
+          <Input value={profileState?.location} onChange={handleChange('location')} />
+        ) : (
+          profile?.location
+        ),
+      icon: <MapPin size={20} />,
+    },
+    {
+      key: 'githubUsername',
+      title: 'GitHub',
+      description:
+        editField === 'githubUsername' ? (
+          <Input value={profileState?.githubUsername} onChange={handleChange('githubUsername')} />
+        ) : (
+          profile?.githubUsername
+        ),
+      icon: <Github size={20} />,
+    },
+    {
+      key: 'company',
+      title: 'Company',
+      description:
+        editField === 'company' ? (
+          <Input value={profileState?.company} onChange={handleChange('company')} />
+        ) : (
+          profile?.company
+        ),
+      icon: <Building2 size={20} />,
+    },
+    {
+      key: 'skills',
+      title: 'Skills',
+      description:
+        editField === 'skills' ? (
+          <Input value={profileState?.skills} onChange={handleChange('skills')} />
+        ) : (
+          <div>
+            {profileState?.skills?.map((skill) => (
+              <Tag key={skill} color="blue">
+                {skill}
+              </Tag>
+            ))}
+          </div>
+        ),
+      icon: <Cog size={20} />,
+    },
+  ];
+
+  const getActionBtns = (field: string) =>
+    editField !== field
+      ? [<Edit size={20} onClick={() => handleEdit(field)} className="cursor-pointer" />]
+      : [
+          <Save size={20} onClick={() => handleSave(field)} className="cursor-pointer" />,
+          <CircleX size={20} onClick={handleCancel} className="cursor-pointer" />,
+        ];
+
   return (
     <ProfileContainer>
       <ProfileCard>
-        <Form form={form} layout="vertical">
-          <AvatarContainer>
-            <StyledAvatar size={120} icon={<User />} src={profile?.user.avatar} />
-          </AvatarContainer>
+        <AvatarContainer>
+          <StyledAvatar size={120} icon={<User />} src={profile?.user.avatar} />
+        </AvatarContainer>
 
-          <Title level={2} style={{ textAlign: 'center', marginBottom: '5px' }}>
-            {profile?.user.name}
-          </Title>
-          {isEditing ? (
-            <Form.Item name="status">
-              <Input style={{ textAlign: 'center', marginBottom: '20px' }} />
-            </Form.Item>
-          ) : (
-            <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginBottom: '20px' }}>
-              {profile?.status}
-            </Text>
+        <Title level={2} style={{ textAlign: 'center', marginBottom: '5px' }}>
+          {profile?.user.name}
+        </Title>
+
+        <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginBottom: '20px' }}>
+          {profile?.status}
+        </Text>
+        <Divider />
+        <List
+          itemLayout="horizontal"
+          dataSource={data}
+          renderItem={(item) => (
+            <List.Item actions={getActionBtns(item.key)}>
+              <List.Item.Meta title={item.title} description={item.description} avatar={item.icon} />
+            </List.Item>
           )}
-          <Divider />
-          <Row gutter={[16, 16]}>
-            <Col span={12}>
-              <InfoItem>
-                <Mail style={{ marginRight: '8px' }} size={16} />
-                <Text strong className="mr-2">
-                  Email:{' '}
-                </Text>
-                {isEditing ? (
-                  <Form.Item name="email" style={{ marginBottom: 0, width: '100%' }}>
-                    <Input />
-                  </Form.Item>
-                ) : (
-                  <Text>email</Text>
-                )}
-              </InfoItem>
-            </Col>
-            <Col span={12}>
-              <InfoItem>
-                <MapPin style={{ marginRight: '8px' }} size={16} />
-                <Text strong className="mr-2">
-                  Location:
-                </Text>
-                {isEditing ? (
-                  <Form.Item name="location" style={{ marginBottom: 0, width: '100%' }}>
-                    <Input />
-                  </Form.Item>
-                ) : (
-                  <Text>{profile?.location}</Text>
-                )}
-              </InfoItem>
-            </Col>
-          </Row>
-          <InfoItem>
-            <Github style={{ marginRight: '8px' }} size={16} />
-            <Text strong className="mr-2">
-              GitHub:
-            </Text>
-            {isEditing ? (
-              <Form.Item name="githubUsername" style={{ marginBottom: 0, width: '100%' }}>
-                <Input />
-              </Form.Item>
-            ) : (
-              <Text>{profile?.githubUsername}</Text>
-            )}
-          </InfoItem>
-          <InfoItem>
-            <Building2 style={{ marginRight: '8px' }} size={16} />
-            <Text strong className="mr-2">
-              Company:
-            </Text>
-            {isEditing ? (
-              <Form.Item name="company" style={{ marginBottom: 0, width: '100%' }}>
-                <Input />
-              </Form.Item>
-            ) : (
-              <Text> {profile?.company}</Text>
-            )}
-          </InfoItem>
-          <SkillsContainer>
-            <InfoItem>
-              <Cog style={{ marginRight: '8px' }} size={16} />
-              <Text strong>Skills</Text>
-            </InfoItem>
-            <div style={{ marginTop: '10px' }}>
-              {isEditing ? (
-                <Form.Item name="skills" style={{ marginBottom: 0 }}>
-                  <Input />
-                </Form.Item>
-              ) : (
-                profile?.skills.map((skill, index) => (
-                  <Tag color="blue" key={index} style={{ marginBottom: '5px' }}>
-                    {skill}
-                  </Tag>
-                ))
-              )}
-            </div>
-          </SkillsContainer>
-          <Divider />
-          <div className="flex justify-end">
-            {isEditing && <Button onClick={() => setIsEditing(false)}>Cancel</Button>}
-            <Button
-              type="primary"
-              icon={isEditing ? <Save size={16} /> : <Edit size={16} />}
-              onClick={isEditing ? handleSaveProfile : handleEditProfile}
-            >
-              {isEditing ? 'Save Profile' : 'Edit Profile'}
-            </Button>
-          </div>
-        </Form>
+        />
       </ProfileCard>
     </ProfileContainer>
   );

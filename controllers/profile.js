@@ -13,15 +13,10 @@ export const getProfiles = async (req, res) => {
 
 export const getCurrentProfile = async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate(
-      'user',
-      ['name', 'avatar']
-    );
+    const profile = await Profile.findOne({ user: req.user.id }).populate('user', ['name', 'avatar']);
 
     if (!profile) {
-      return res
-        .status(400)
-        .json({ message: 'There is no profile for this user' });
+      return res.status(400).json({ message: 'There is no profile for this user' });
     }
 
     res.json(profile);
@@ -33,10 +28,7 @@ export const getCurrentProfile = async (req, res) => {
 
 export const getProfileByUserId = async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.params.userId }).populate(
-      'user',
-      ['name', 'avatar']
-    );
+    const profile = await Profile.findOne({ user: req.params.userId }).populate('user', ['name', 'avatar']);
 
     if (!profile) {
       return res.status(400).json({ message: 'Profile not found' });
@@ -57,19 +49,15 @@ export const createProfile = async (req, res) => {
     company,
     location,
     status,
-    skills: skills.split(',').map(skill => skill.trim()),
-    githubUsername
+    skills: skills.split(',').map((skill) => skill.trim()),
+    githubUsername,
   };
 
   try {
     let profile = await Profile.findOne({ user: req.user.id });
 
     if (profile) {
-      profile = await Profile.findOneAndUpdate(
-        { user: req.user.id },
-        { $set: profileFields },
-        { new: true }
-      );
+      profile = await Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true });
       return res.json(profile);
     }
 
@@ -88,16 +76,14 @@ export const updateCurrentProfile = async (req, res) => {
     company,
     location,
     status,
-    skills: skills.split(',').map(skill => skill.trim()),
-    githubUsername
+    skills: Array.isArray(skills)
+      ? skills.map((skill) => skill.trim())
+      : skills.split(',').map((skill) => skill.trim()),
+    githubUsername,
   };
 
   try {
-    const profile = await Profile.findOneAndUpdate(
-      { user: req.user.id },
-      { $set: profileFields },
-      { new: true }
-    );
+    const profile = await Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true });
     res.json(profile);
   } catch (err) {
     console.error(err.message);
@@ -109,9 +95,7 @@ export const updateProfile = async (req, res) => {};
 
 export const getGithubRepos = async (req, res) => {
   try {
-    const repos = await axios.get(
-      `https://api.github.com/users/${req.params.username}/repos`
-    );
+    const repos = await axios.get(`https://api.github.com/users/${req.params.username}/repos`);
     res.json(repos.data);
   } catch (err) {
     console.error(err.message);
