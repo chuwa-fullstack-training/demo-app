@@ -75,7 +75,7 @@ const CreateProfile: React.FC = () => {
             label="Professional Status"
             rules={[{ required: true, message: 'Please input your professional status!' }]}
           >
-            <Input prefix={<User size={16} />} placeholder="e.g. Developer, Manager, Student" />
+            <Input prefix={<User size={16} />} placeholder="e.g. Developer, Manager, Intern" />
           </Form.Item>
           <Form.Item name="company" label="Company">
             <Input prefix={<Building2 size={16} />} placeholder="Company" />

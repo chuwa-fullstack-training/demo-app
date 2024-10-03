@@ -2,10 +2,9 @@ import { ProfilePayload, Profile as ProfileType } from '@/api/profile';
 import { AppDispatch, RootState } from '@/app/store';
 import { setMessage } from '@/features/message/messageSlice';
 import { fetchGithubRepos, fetchUserProfile, updateUserProfile } from '@/features/profile/profileSlice';
-import { cn } from '@/lib/utils';
 import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
-import { Avatar, Card, Divider, Input, List, Space, Spin, Tag, Typography } from 'antd';
+import { Avatar, Card, Divider, Input, List, Spin, Tag, Typography } from 'antd';
 import { Building2, CircleX, Cog, Edit, Github, MapPin, Save, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -96,6 +95,9 @@ const Profile: React.FC = () => {
 
   const handleEdit = (field: string) => {
     setEditField(field);
+    if (field === 'githubUsername') {
+      setGithubUsername('');
+    }
   };
 
   const handleSave = async (field: string) => {
@@ -216,27 +218,37 @@ const Profile: React.FC = () => {
         <List
           itemLayout="horizontal"
           dataSource={data}
-          renderItem={(item) => (
-            <List.Item actions={getActionBtns(item.key)} onClick={() => handleClick(item.key)}>
-              <List.Item.Meta title={item.title} description={item.description} avatar={item.icon} />
-              {item.key === 'githubUsername' && githubRepos && (
-                <ul
-                  style={{ width: '50%' }}
-                  className="list-none hover:list-disc h-32 overflow-y-auto gap-2 flex flex-col"
-                >
-                  {githubRepos.length > 0 &&
-                    githubRepos.slice(0, 3).map((repo) => (
-                      <li key={repo.name}>
-                        <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-                          {repo.name}
-                        </a>
-                        <div className="text-xs text-gray-500">{repo.description}</div>
-                      </li>
-                    ))}
-                </ul>
-              )}
-            </List.Item>
-          )}
+          renderItem={(item) =>
+            item.key === 'githubUsername' ? (
+              <List.Item actions={getActionBtns(item.key)} onClick={() => handleClick(item.key)}>
+                <List.Item.Meta title={item.title} description={item.description} avatar={item.icon} />
+                {isGithubReposLoading ? (
+                  <Spin />
+                ) : (
+                  githubRepos && (
+                    <ul
+                      style={{ width: '50%' }}
+                      className="list-none hover:list-disc h-32 overflow-y-auto gap-2 flex flex-col"
+                    >
+                      {githubRepos.length > 0 &&
+                        githubRepos.slice(0, 3).map((repo) => (
+                          <li key={repo.name}>
+                            <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
+                              {repo.name}
+                            </a>
+                            <div className="text-xs text-gray-500">{repo.description}</div>
+                          </li>
+                        ))}
+                    </ul>
+                  )
+                )}
+              </List.Item>
+            ) : (
+              <List.Item actions={getActionBtns(item.key)} onClick={() => handleClick(item.key)}>
+                <List.Item.Meta title={item.title} description={item.description} avatar={item.icon} />
+              </List.Item>
+            )
+          }
         />
       </ProfileCard>
     </ProfileContainer>
