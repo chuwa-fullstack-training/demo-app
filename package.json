@@ -8,6 +8,7 @@
     "node": "20"
   },
   "scripts": {
+    "setup": "npm install && npm install --prefix ./client",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "nodemon --env-file=.env index.js",
     "dev:client": "npm run dev --prefix ./client",

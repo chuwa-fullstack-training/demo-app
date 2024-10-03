@@ -2,7 +2,7 @@ import { AppDispatch, RootState } from '@/app/store';
 import { fetchPosts, likePost, Post } from '@/features/post/postSlice';
 import { cn } from '@/lib/utils';
 import styled from '@emotion/styled';
-import { Avatar, Card, List, Space, Spin, Typography } from 'antd';
+import { Avatar, Card, List, Spin, Typography } from 'antd';
 import { Heart } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import Moment from 'react-moment';
@@ -91,6 +91,7 @@ const AllPosts: React.FC = () => {
   return (
     <List
       dataSource={localPosts}
+      pagination={{ position: 'bottom', align: 'center', pageSize: 5 }}
       renderItem={(post) => (
         <StyledCard>
           <PostMeta>
