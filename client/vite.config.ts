@@ -19,6 +19,16 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    proxy: {
+      '/api': {
+        target: 'https://demo-app-h712.onrender.com',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(path.dirname(fileURLToPath(import.meta.url)), './src'),
