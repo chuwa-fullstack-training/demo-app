@@ -1,40 +1,98 @@
-import express from "express";
-import {
-  getAllUsers,
-  getUserById,
-  updateUser,
-  deleteUser,
-} from "../controllers/users.js";
-import { verifyToken, checkAdmin } from "../middlewares/auth.js";
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the user
+ *         name:
+ *           type: string
+ *           description: The name of the user
+ *         email:
+ *           type: string
+ *           description: The email of the user
+ *         password:
+ *           type: string
+ *           description: The password of the user
+ *         avatar:
+ *           type: string
+ *           description: The avatar of the user
+ *         isAdmin:
+ *           type: boolean
+ *           description: The admin status of the user
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time the user was created
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time the user was last updated
+ */
+import express from 'express';
+import { getAllUsers, getUserById, updateUser, deleteUser } from '../controllers/users.js';
+import { verifyToken, checkAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
 
 /**
- * @route GET /api/users
- * @desc Get all users
- * @access Public
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: The user managing API
+ * /api/users:
+ *   get:
+ *     summary: Returns the list of all the users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: The list of the users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       500:
+ *         description: server error
  */
-router.get("/", getAllUsers);
+router.get('/', getAllUsers);
 
 /**
- * @route GET /api/users/:id
- * @desc Get user by ID
- * @access Public
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: The user managing API
+ * /api/users/{id}:
+ *   get:
+ *     summary: Get the user by id
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user id
+ *     responses:
+ *       200:
+ *         description: The user with the id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  */
-router.get("/:id", getUserById);
+router.get('/:id', getUserById);
 
-/**
- * @route PUT /api/users/:id
- * @desc Update a user
- * @access Public
- */
-router.put("/:id", updateUser);
+router.put('/:id', updateUser);
 
-/**
- * @route DELETE /api/users/:id
- * @desc Delete a user
- * @access Private, Admin
- */
-router.delete("/:id", verifyToken, checkAdmin, deleteUser);
+router.delete('/:id', verifyToken, checkAdmin, deleteUser);
 
 export default router;
